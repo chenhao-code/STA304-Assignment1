@@ -1,0 +1,235 @@
+---
+title: "ADD IN MEANINGFUL TITLE HERE"
+author: "A2 GROUP NUMBER: ADD YOUR NAMES HERE"
+subtitle: "STA304 - Fall 2025 - Assignment 1"
+format: pdf
+editor: visual
+---
+
+```{r, include = FALSE}
+
+# Here you can load in and clean the data (you may need to do the cleaning in a separate R script - this is up to you). 
+library(tidyverse)
+
+
+# You may need additional chunks, in case you want to include some of the cleaning output.
+
+```
+
+# 1 Introduction
+
+The goal of this report is to design and analyze a survey that will provide actionable feedback for the development of the **STEMBuddies Handbook**. This handbook is intended to guide high school students, especially those from underrepresented and underserved groups, as they navigate course selection, extracurricular involvement, and post-secondary applications. By capturing student perspectives, the survey aims to identify areas where the handbook is effective and highlight gaps where additional support or clarification is needed.
+
+This topic is particularly relevant because access to clear, reliable, and inclusive educational resources is not equally distributed across student populations. Research shows that tailored supports improve confidence, increase persistence, and foster more equitable outcomes in science, technology, engineering, and mathematics (STEM) pathways (National Academies of Sciences, Engineering, and Medicine, 2018; Wang & Degol, 2017). As a nonprofit organization, **STEMBuddies** has already supported more than 700 students through mentorship and workshops designed to expand access to STEM education (STEMBuddies, n.d.). The survey therefore connects directly to the organization’s mission by ensuring that the handbook reflects the real needs of its community.
+
+By conducting this survey and subsequent analysis, we will generate evidence-based insights that inform revisions to the handbook. Specifically, the results will highlight student priorities, such as clarity of application steps, accessibility of scholarship information, and usefulness of planning tools. These findings will help STEMBuddies refine its resources, making the handbook more impactful in supporting students’ academic and personal journeys toward post-secondary success.
+
+# 2 Survey Showcasing
+
+## 2.1 Survey Description
+
+The survey was created using **Google Forms** and can be accessed here: Survey Link – Example. It was structured into four parts: an introduction outlining the study and ensuring consent, a demographic section, a needs assessment section, and a closing message. The demographic items included **age group, highest education completed, and field of study/profession**, which allow comparisons across learning stages and academic backgrounds. The needs assessment section featured questions about preferred learning resources (e.g., videos, interactive exercises, written guides), barriers to access (e.g., cost, time, difficulty of content), and the importance of features such as affordability, clarity, interactivity, accessibility, and language options. Two open-ended questions were added to capture desired STEM topics and personal experiences, ensuring both structured and nuanced data for later analysis.
+
+## 2.2 Testing My Survey
+
+Before wider distribution, the survey was **pilot-tested with three peers** to ensure clarity and usability. They completed the survey on both desktop and mobile devices, which confirmed that the formatting worked across platforms. Feedback suggested that some of the language in the “barriers to access” question was too technical, so it was simplified (e.g., “limited awareness of resource ecosystems” → “limited awareness of available resources”). This testing phase helped ensure that the final survey was concise, user-friendly, and accessible to a broad range of participants.
+
+## 2.3 Showcasing Relevant Question(s)
+
+As a showcase, the following item was selected because it is directly relevant to the subsequent analysis of resource preferences:
+
+Table 1. Showcase Question
+
++--------------+-----------------------------------------------------------------------------------------------------+-------------------------------------+
+| Question No. | Survey Question                                                                                     | Response Options                    |
++==============+=====================================================================================================+=====================================+
+| Q4           | *Which type of STEM learning resource do you find most effective for your personal learning needs?* | \(a\) Video tutorials               |
+|              |                                                                                                     |                                     |
+|              |                                                                                                     | \(b\) Interactive exercises/quizzes |
+|              |                                                                                                     |                                     |
+|              |                                                                                                     | \(c\) Written articles/guides       |
+|              |                                                                                                     |                                     |
+|              |                                                                                                     | \(d\) Online discussion forums      |
+|              |                                                                                                     |                                     |
+|              |                                                                                                     | \(e\) Other                         |
++--------------+-----------------------------------------------------------------------------------------------------+-------------------------------------+
+
+This question was chosen because it yields clear categorical data that can be cross-tabulated with demographic variables. Its strength lies in its directness and forced-choice format, which makes statistical analysis straightforward. The drawback is that it does not allow respondents to select multiple formats, potentially limiting nuance. However, this limitation was intentional, as requiring one choice simplifies comparisons and highlights the most dominant learning preferences.
+
+# 3 Procedure
+
+## 3.1 Proposed Sampling Procedure
+
+The **target population** for this survey is **post-secondary students** (college and university learners in both STEM and non-STEM programs), as they are the group most likely to benefit from STEMBuddies’ resources. A reasonable **sampling frame** would include student mailing lists, campus newsletters, academic departments, and student organizations hosted on platforms such as Discord or Facebook. The **sample units** are **individual students**, and the survey will be distributed digitally to maximize accessibility and reach.
+
+To implement this realistically, STEMBuddies could proceed in three steps. **First**, collaborate with universities and student associations to circulate the survey link through official mailing lists and online learning portals. **Second**, promote the survey on social media channels widely used by students, such as Instagram and Discord communities. **Third**, provide a small incentive (e.g., raffle entry or discount code) to encourage participation and reduce self-selection bias. This approach is cost-effective, scalable, and aligns with how students typically engage with online resources. The main strengths of this design are its efficiency and broad coverage, though it is still subject to **coverage bias** (students outside these networks may be missed) and **self-selection bias** (those already interested in STEM may be more likely to respond).
+
+## 3.2 Simulation
+
+Since real survey data could not be collected, we simulated a dataset that mirrors the survey design outlined in Section 2. The simulated data included responses for all survey questions, but here we focus on the key **showcase variable**: *preferred STEM learning resource type*. Responses were generated randomly across five categories (video tutorials, interactive exercises, written guides, online forums, other) with weighted probabilities to reflect realistic preferences (e.g., a higher proportion selecting video tutorials and interactive exercises). Demographic variables such as age group and education level were simulated using categorical distributions with balanced but varied representation, while barriers and importance ratings were simulated using multinomial and Likert-scale sampling, respectively.
+
+The simulation was implemented in R with a fixed random seed to ensure reproducibility. The output is stored in a tidy tibble, with one row per simulated participant and columns for each survey question. A preview of this dataset is shown in the Appendix to demonstrate that the simulated responses align with the expected inputs of the survey questions.
+
+```{r}
+set.seed(49)
+library(tibble)
+library(purrr)
+
+n <- 100
+
+# Demographics
+age_group <- sample(c("Under 18","18–24","25–34","35–44","45+"),
+                    n, replace=TRUE, prob=c(0.1,0.4,0.25,0.15,0.1))
+
+education <- sample(c("High school or below","College/university",
+                      "Undergraduate degree","Graduate degree","Other"),
+                    n, replace=TRUE, prob=c(0.15,0.25,0.35,0.2,0.05))
+
+field <- sample(c("STEM","non-STEM","other"), n, replace=TRUE, prob=c(0.5,0.4,0.1))
+
+# Preferred resource
+preferred_resource <- sample(c("Video tutorials","Interactive exercises/quizzes",
+                               "Written articles","Online forums","Other"),
+                             n, replace=TRUE, prob=c(0.35,0.3,0.2,0.1,0.05))
+
+# Frequency of use
+frequency <- sample(c("Daily","Weekly","Monthly","Rarely","Never"),
+                    n, replace=TRUE, prob=c(0.2,0.4,0.2,0.15,0.05))
+
+# Barriers (multi-select, stored as comma-separated string)
+barrier_opts <- c("Cost","Lack of time","Limited awareness",
+                  "Lack of guidance","Difficulty understanding","Other")
+
+draw_barriers <- function() {
+  k <- sample(0:3, 1, prob=c(0.1,0.45,0.35,0.1))
+  if (k == 0) return("")
+  base <- sample(barrier_opts[1:5], k, replace=FALSE)
+  if (runif(1) < 0.1) base <- c(base,"Other")
+  paste(base, collapse=", ")
+}
+barriers <- replicate(n, draw_barriers())
+
+# Likert (1–5)
+likert <- function(n, tilt=0) {
+  base <- rep(1,5)
+  if (tilt>0) base <- c(0.8,0.9,1,1.1,1.2)
+  base <- base/sum(base)
+  sample(1:5, n, replace=TRUE, prob=base)
+}
+
+affordable  <- likert(n, tilt=1)
+clarity     <- likert(n, tilt=1)
+interactive <- likert(n)
+accessible  <- likert(n, tilt=1)
+multilang   <- likert(n)
+
+# Assemble tibble (short version)
+sim_data <- tibble(
+  age_group, education, field,
+  preferred_resource, frequency,
+  barriers,
+  affordable, clarity, interactive, accessible, multilang
+)
+
+head(sim_data)
+
+
+```
+
+# 4 Data
+
+Briefly introduce the data and key variables of interest. If you do any general data cleaning or data processing you should describe it (in a reproducible manner) here. It might be helpful to clearly define the variables of interest (i.e., the ones you will present in the subsequent sections) here, along with any data cleaning you did to these variables.
+
+```{r, include = FALSE}
+# 
+# # Here you can clean your data (if needed). 
+# 
+# # Below is an example of me changing the "yeah"s to "Yes"s
+# 
+# sim_data_clean <- sim_data %>% 
+#   mutate(friendly_clean  = case_when(friendly=="yeah" ~ "Yes",
+#                                      friendly=="No"~"No")) %>% 
+#   select(-friendly)
+
+```
+
+```{r, echo = FALSE}
+# 
+# # Use this to create some plots. 
+# 
+# sim_data_clean %>% ggplot(aes(x=friendly_clean))+
+#   geom_bar(fill="orange", col="brown") +
+#   theme_minimal() + 
+#   labs(x = "Friendly",
+#        y = "Frequency",
+#        title = "Figure 1: A bar plot displaying whether the student thinks that \n they are a friendly person or not for all students \n in highschools measured in Ontario.") 
+
+```
+
+# 5 Methods
+
+Include some text introducing the methodology. Here you should describe the confidence interval and all of the components.
+
+$$ include.your.mathematical.model.here.if.you.have.some.math.to.show $$
+
+Here is an example of a non-sensical CI that the prof made up, but has math coding components that you can change accordingly:
+
+$$\bar{X} \pm \chi_{\alpha/2} \sqrt{\frac{1+1}{n}}$$
+
+\<Here you should describe the CI. Here is an example with a citation:\>
+
+I will invoke a non-parametric bootstrap \[2\] to derive the 95% confidence interval (CI) for the mean age of students in STA304.
+
+# 6 Results
+
+```{r, include = FALSE}
+
+# Here you can derive the CIs of interest based off the simulated data in a previous chunk.
+
+```
+
+Remind the reader of what your variable is. Here you could present your results. You may want to put them into a well formatted table. Be sure that there is some text describing the results.
+
+In Table 1 I present both confidence intervals of... Compare the confidence intervals of the same outcome of the two surveys. Be sure to highlight any key takeaways of the results and how this relays to the populations at hand and how it relates back to the motivations you laid out in your Introduction section.
+
++-----------------------+--------------------------------+---------------------------------------------+
+|                       | Proportion of Outcome Variable | 95% Confidence Interval of Outcome Variable |
++=======================+================================+=============================================+
+| My Survey Q           | 0.34                           | (lower bound, upper bound)                  |
++-----------------------+--------------------------------+---------------------------------------------+
+| Another Survey Q      | 0.25                           | (lower bound, upper bound)                  |
++-----------------------+--------------------------------+---------------------------------------------+
+
+: The proportions and 95% confidence intervals of outcome variable of interest calculated for both my survey question and another survey question.
+
+# 7 Generative AI Statement
+
+Here is where you can explain your usage of Generative AI tool(s). Be sure to reference it.
+
+Alternatively, if you did not use Generative AI, please include a brief statement outlining your workflow for completing this assignment.
+
+# 8 Bibliography
+
+1.  Schwartz, B. M., Landrum, R. E., & Gurung, R. A. (2020). *An easyguide to APA style*. Sage Publications.
+
+2.  Dekking, F. M., et al. (2005) *A Modern Introduction to Probability and Statistics: Understanding why and how.* Springer Science & Business Media.
+
+3.  Allaire, J.J., et. el. *References: Introduction to R Markdown*. RStudio. <https://rmarkdown.rstudio.com/docs/>. (Last Accessed: April 4, 1991)
+
+# 9 Appendix
+
+## 9.1 Survey questions
+
+Below is a well formatted copy of all of my survey questions (along with the opening and closing messages/statements).
+
+## 9.2 Simulated Survey Data
+
+Below is a `glimpse()` or `head()` of my simulated data (this should be the data that looks like the inputs from your survey). This is the only place in the report where you can show your raw R code and output.
+
+```{r, echo=TRUE}
+# head(sim_data)
+```
+
+## 9.3 Supplementary Materials
+
+Any other supplementary items you wish to include (e.g., more plots, derivations, etc.) can be in this sub section.
